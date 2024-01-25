@@ -28,8 +28,6 @@ import sys
 
 #
 
-print("Jävlar vad snyggt det här kan bli!")
-
 
 '''
 
@@ -37,17 +35,12 @@ IN THIS VERSION I HAVE PUT IN THE CARBON OF MANURE THAT IS SUGGESTED BY THE VERA
 
 
 '''
-
-
-
 global VERA_database_amount_of_carbon_in_manure_per_hectar_total
 VERA_database_amount_of_carbon_in_manure_per_hectar_total = 300 
 
 
-
 global Calculated_pasture_added_carbon
 Calculated_pasture_added_carbon = 0
-
 
 
 def input_2020():
@@ -56,14 +49,10 @@ def input_2020():
         ''' First introduction of import of the BLOCK DATA'''
         global df_input_1512_2020
         
-        df_input_1512_2020 = gpd.read_file(r'/Users/rehnan/Library/CloudStorage/OneDrive-Chalmers/GIS/MULTI.JORDBRUKSBLOCK_GRODKOD2020_GV_Clip/MULTI.JORDBRUKSBLOCK_GRODKOD2020_GV_Clip.shp')
-        
-        #df_input_1512_2020 = gpd.read_file(r'')
-        
+        df_input_1512_2020 = gpd.read_file(r' # Path to shapefile with the interesting fields, where different crops are assigned a value')
+
         global df_input_2020
         df_input_2020 = pd.DataFrame(df_input_1512_2020)
-
-        #print(df_input_1512_2020.keys())
 
 input_2020()
 
@@ -73,8 +62,6 @@ def winterwheat_import():
 
         #The basefile will be the original df which all other will have the same shape as. I will start with winterwheat
 
-       
-        #The basefile will be the original df which all other will have the same shape as. I will start with winterwheat
 
         df_winterwheat = df_input_1512_2020[df_input_1512_2020['GRODKOD'] == '4'].copy()
         df_adding_2 = df_input_1512_2020[df_input_1512_2020['GRODKOD'] == '1']
@@ -88,50 +75,52 @@ def winterwheat_import():
         df_winterwheat.drop(columns= ['KUND_LAN','OBJECTID','SKIFTESBET','geometry'], inplace=True, axis=1)
 
         #Winter Cereals
-
         #1,4,7,8
 
         print(df_winterwheat)
         #print(df_winterwheat.info())
 
-        df_basefile_input = pd.read_excel(r'/Users/rehnan/Library/CloudStorage/OneDrive-Chalmers/Projektet/bridge_data_/csv_2022/paper_2/pkl/crop_dataframes_model/df_basefile_every_crop.xlsx')
+        df_basefile_input = pd.read_excel(r'')
 
         df_base = pd.DataFrame(df_basefile_input)
 
         df_work = pd.concat([df_winterwheat, df_base], axis="columns")
-        #print(df_work)
-        #df_work.to_excel(r'C:\Users\rehnan\OneDrive - Chalmers\Projektet\bridge_data_\csv_2022\paper_2\pkl\crop_dataframes_model/df_basefile_every_crop_concat_test.xlsx')
-
+      
         global df_working_crop
 
         df_working_crop = pd.DataFrame(df_work).copy()
         df_working_crop.drop(columns =['fields_nr'], inplace= True)
+
+
+
+        ''' Below is the classification and decisons made on "Carbon basis" - how much NPP is produced and where in the system the carbon goes
+        This is from Swedish national data and is not something that directly can be applied without understanding the dynamics and possible local factors'''
         
-        #print(df_working_crop)
-        #print(df_working_crop['AREAL'].mean())
 
         def Scenario_factors_for_carbon_flow_analysis():
+
+           
+                
             ''''''
 
-            carbon_in_fodder_import = 100        # calculated based on the animals in the region how much they need - and dived up per hektar
+            carbon_in_fodder_import = 100        
 
-            barged_factor = 0.33                                    # SCB2012
-            barged_factor_rapeseed = 0.07
+            barged_factor = 0.33                                    
             barged_factor_legumes = 0.04
             
             
-            left_to_soil_factor = 1-barged_factor                   #Amount of which the residue humification takes stand 
+            left_to_soil_factor = 1-barged_factor                   
 
-            fodder_constant_from_harvest = 0.35                               # Beräkningar efter CC henriksson
+            fodder_constant_from_harvest = 0.35                               
             fodder_constant_from_harvest_rapeseed = 0.67
-            fodder_constant_from_harvest_legumes = 0.8                         # svenska baljväxter - källa jordbruksverket någonstan 
+            fodder_constant_from_harvest_legumes = 0.8                         
             fodder_constant_from_harvest_ley = 0.73
             fodder_constant_from_harvest_other = 0
             
-            harvest_out_constant = 1 -fodder_constant_from_harvest            # Beräkningar efter CC henriksson
-            harvest_out_constant_rapeseed = 1 -fodder_constant_from_harvest_rapeseed            # Beräkningar efter CC henriksson
-            harvest_out_constant_legumes = 1 -fodder_constant_from_harvest_legumes           # Beräkningar efter CC henriksson
-            harvest_out_constant_ley = 1 -fodder_constant_from_harvest_ley           # Beräkningar efter CC henriksson
+            harvest_out_constant = 1 -fodder_constant_from_harvest            
+            harvest_out_constant_rapeseed = 1 -fodder_constant_from_harvest_rapeseed            
+            harvest_out_constant_legumes = 1 -fodder_constant_from_harvest_legumes           
+            harvest_out_constant_ley = 1 -fodder_constant_from_harvest_ley          
             harvest_out_constant_other = 1 
             
             #Carbon out group
@@ -168,7 +157,7 @@ def winterwheat_import():
             
             decay_rate = 0.758        # for the wwather as used in peopley bolinder iDBM modle 
             
-            Re = 0.8
+            Re = 0.8  # values from ICBM papers 
             
             
             
@@ -187,7 +176,7 @@ def winterwheat_import():
             
             
             
-            #Animal carbon group                                                    # källor på detta möjligen via VERA
+            #Animal carbon group                                                 # källor på detta möjligen via VERA
             
             c_from_animals_to_food = 0.40            # The amount of carbon that is pure food fron the animals
                                                     
@@ -218,9 +207,6 @@ def winterwheat_import():
             
             biogas_C_factor_leaving_system = (1-biogas_C_factor_used_inside_system)                 # the exported amount of biogas 
             
-            
-            
-            
             #biochar group 
             
             biochar_efficiency_Factor = 0.50
@@ -230,10 +216,7 @@ def winterwheat_import():
             
             #Ammendments grouped
             
-           
-            
-            
-            
+
             biogas_rest_product_to_bio_manure = 0.2             # assumtion of how much restproducts there are after  - biomanure
             
             
@@ -249,7 +232,9 @@ def winterwheat_import():
             def Carbon_input_data_Based_on_HARVEST():
                 #### the main input file ###
 
-                df_input = pd.read_excel(r"/Users/rehnan/Library/CloudStorage/OneDrive-Chalmers/Projektet/bridge_data_/csv_2022/paper_2/landscape_norm_mean_2.xlsx")
+                ### The main input consits of harvest data - how much ton/ha is harvested per crop group - area - water content etc... ###
+
+                df_input = pd.read_excel(r"")
 
                 #print(df_input)
 
@@ -275,7 +260,7 @@ def winterwheat_import():
                 
                 Bulk_harvest = hostvete_in*dm * c
                 Bulk_straw = (hostvete_in*dm * c *(1-HI))/HI
-                Bulk_roots = (hostvete_in*dm * c)/(SR * HI)     # förutsätter här att det är 25% av hela växtens biomassa som är under jord i rötter osv
+                Bulk_roots = (hostvete_in*dm * c)/(SR * HI)     
                 Bulk_root_extra = Bulk_roots* 0.65  #  the value is from the BOLINDER 2007 paper 
                 
                 Total_bulk_drymatter = (Bulk_harvest + Bulk_straw + Bulk_roots + Bulk_root_extra)
@@ -308,20 +293,7 @@ def winterwheat_import():
                 print(carbon_rootz_1)
                 print(carbon_rootz_2)
                 
-                
-                #print(df_working_crop)
-                
-                # # Define column names
-                # column_names = ['GEOGRAFISK', 'GRODKOD', 'GRODBESKRI', 'AREAL']
-                # global df_working_crop
-                # # Create a DataFrame with 1 row and 4 columns, and custom column names
-                # df_working_crop = pd.DataFrame(columns=column_names)
 
-                # # Add a new row with values
-                # new_row = {'GEOGRAFISK': 10000000, 'GRODKOD': 4, 'GRODBESKRI': 'WW', 'AREAL': 1}
-                # df_working_crop = df_working_crop.append(new_row, ignore_index=True)
-
-                # print(df_working_crop)
                 
                 
                
@@ -526,30 +498,10 @@ def winterwheat_import():
                             desired_value = 1  # Change this to the value you want to set
                             df1_sum_winterwheat.at[last_row_index, 'AREAL'] = desired_value
                             
-                            #print(df_sum_2)
-                            #print(Total_bulk_drymatter)
-                          
-                            #df1_sum_winterwheat.to_pickle(r'C:\Users\rehnan\OneDrive - Chalmers\Projektet\bridge_data_\csv_2022\paper_2\pkl\pkl_cropgroupes_2023\may_2023_version_ICBM_2/wintercereal.pkl')
-                            
                             
                             df1_sum_winterwheat.to_pickle(r'/Users/rehnan/Library/CloudStorage/OneDrive-Chalmers/Projektet/bridge_data_/csv_2022/paper_2/pkl/pkl_cropgroupes_2023/may_2023_version_ICBM_2/wintercereal.pkl')
                             
-                            #df1_sum_winterwheat.to_excel(r'C:\Users\rehnan\OneDrive - Chalmers\Projektet\bridge_data_\csv_2022\paper_2\pkl/pkl_cropgroupes_2023/wintercereal.xlsx')
                             
-                            #print(area_norm)
-                            print(df1_sum1)  
-                            
-                            # Get the last row as a DataFrame
-                            last_row_df = df_crop_ww_prel.tail(2)
-                            
-                            
-                            # Transpose the last row DataFrame to make it a column
-                            last_row_column = last_row_df.transpose()
-                            
-                            # Drop the last column
-                            bottom_rows_df = last_row_column.iloc[:, :-1]
-
-                            # Print the column with DataFrame header
                             print(bottom_rows_df)
                       
                             
