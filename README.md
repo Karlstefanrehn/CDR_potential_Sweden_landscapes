@@ -17,7 +17,24 @@ The files here are the codes needed to understand the methodology, the construct
 
 These involve: 
 
-Creating crop groupes
+Creating the crop groups with creaging_main_cropgroup.py
+
+Creating the main rotations and the structure with Rotation_structure.py
+
+Putting crop groups together wtih agriculture_model_construct.py
+
+Resulting in the main model output that is found in the main model for CDR.py script. 
+
+
+This togehter is the combined model constructed to produce the results of the article. 
+
+
+
+
+
+
+
+
 
 
 
