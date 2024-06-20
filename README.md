@@ -1,7 +1,8 @@
 # CDR_potential_Sweden_landscapes
 
 
-This is for the article written by Andreas Rehn et al 2024. 
+This is for the article written by Andreas Rehn et al 2024
+
 Carbon removal potentials in agricultural systems – participatory scenario modelling with farmers in Sweden
 
 Authors: Andreas Rehn1*, Göran Berndes1, Christel Cederberg1, Oskar Englund2
