@@ -2,7 +2,8 @@
 
 
 This is for the article written by Andreas Rehn et al 2024. 
-Carbon removal potential in agricultural systems – Scenario-based model with suggested measures from farmer participation in Sweden
+Carbon removal potentials in agricultural systems – participatory scenario modelling with farmers in Sweden
+
 Authors: Andreas Rehn1*, Göran Berndes1, Christel Cederberg1, Oskar Englund2
 
 1 Div. of Physical Resource Theory, Dept. of Space, Earth and Environment
